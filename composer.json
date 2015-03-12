@@ -12,6 +12,5 @@
   "type": "library",
    "autoload": {
         "psr-0": { "Annotation\\": "" }
-    },
-	"target-dir": "Annotation"
+    }
 }
