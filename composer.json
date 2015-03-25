@@ -11,9 +11,10 @@
   "license": "MIT",
   "type": "library",
    "autoload": {
-        "psr-0": { "Annotation\\": "" }
+        "psr-0": { "Alcatraz\\Annotation\\": "" }
     },
   "require" : {
     "alcatraz/cache": "1.0.0"
-  }
+  },
+  "target-dir": "Alcatraz"
 }

@@ -6,7 +6,7 @@
  * Time: 20:30
  */
 
-namespace Helpers\Annotation;
+namespace Alcatraz\Annotation;
 
 
 class AnnotationException extends \Exception{

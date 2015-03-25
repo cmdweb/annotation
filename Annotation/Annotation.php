@@ -6,8 +6,8 @@
  * Time: 20:26
  */
 
-namespace Annotation;
-use Cache\Cache;
+namespace Alcatraz\Annotation;
+use Alcatraz\Cache\Cache;
 
 /**
  * Class Annotation
