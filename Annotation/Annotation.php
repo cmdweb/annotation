@@ -233,7 +233,7 @@ class Annotation {
      */
     public function getAnnotationsByMethod($attr){
         $annotations = $this->getAnnotationsMethods();
-        var_dump($annotations);
+
         if(isset($annotations[$attr]))
             return $annotations[$attr];
 
