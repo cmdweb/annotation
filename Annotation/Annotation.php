@@ -81,7 +81,7 @@ class Annotation {
         $cacheGet = $cache->get(get_class($this->_class));
         $cacheMethods = $cache->get("methods" . get_class($this->_class));
 
-        if($cacheGet == null) {
+        if($cacheGet == null && $cacheMethods == null) {
             $this->getAllAnnotations();
             $cache->set(get_class($this->_class), $this->_annotations, "24 hours");
             $cache->set("methods" . get_class($this->_class), $this->_annotationsMethods, "24 hours");
