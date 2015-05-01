@@ -78,13 +78,13 @@ class Annotation {
         $this->_reflection = new \ReflectionClass($this->_class);
 
         $cache = new Cache();
-        $cacheGet = $cache->get(get_class($this->_class));
-        $cacheMethods = $cache->get("methods" . get_class($this->_class));
+        $cacheGet = $cache->get($this->_class);
+        $cacheMethods = $cache->get("methods" . $this->_class);
 
-        if($cacheGet == null && $cacheMethods == null) {
+        if($cacheGet == null) {
             $this->getAllAnnotations();
-            $cache->set(get_class($this->_class), $this->_annotations, "24 hours");
-            $cache->set("methods" . get_class($this->_class), $this->_annotationsMethods, "24 hours");
+            $cache->set($this->_class, $this->_annotations, "24 hours");
+            $cache->set("methods" . $this->_class, $this->_annotationsMethods, "24 hours");
         }else{
             $this->_annotations = $cacheGet;
             $this->_annotationsMethods = $cacheMethods;
@@ -185,10 +185,10 @@ class Annotation {
      */
     private function getClass($class){
         if(is_object($class))
-            return $this->_class = &$class;
+            return $this->_class = get_class($class);
 
         if(class_exists($class))
-            return $this->_class = new $class();
+            return $this->_class = $class;
 
         throw new AnnotationException("AnnotationError: Esta classe não existe.", 1);
     }
