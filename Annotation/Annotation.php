@@ -185,7 +185,7 @@ class Annotation {
      */
     private function getClass($class){
         if(is_object($class))
-            return $this->_class = get_class($class);
+            $class = get_class($class);
 
         if(class_exists($class))
             return $this->_class = $class;
