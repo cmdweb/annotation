@@ -4,17 +4,16 @@
   "authors": [
     {
       "name": "Gabriel Malaquias",
-      "email": "g@gmalaquias.com"
+      "email": "gemalaquias@gmail.com"
     }
   ],
   "keywords": ["alcatraz", "annotation"],
   "license": "MIT",
   "type": "library",
    "autoload": {
-        "psr-0": { "Alcatraz\\Annotation\\": "" }
+        "psr-4": { "Alcatraz\\Annotation\\": "src" }
     },
   "require" : {
-    "alcatraz/cache": "1.0.0"
-  },
-  "target-dir": "Alcatraz"
+    "alcatraz/cache": "1.1.0"
+  }
 }
