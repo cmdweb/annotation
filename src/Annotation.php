@@ -8,10 +8,11 @@
 
 namespace Alcatraz\Annotation;
 use Alcatraz\Cache\Cache;
+use Alcatraz\Kernel\Request;
 
 /**
- * Class src
- * @package Helpers\src
+ * Class Annotation
+ * @package Helpers\Annotation
  */
 
 
@@ -42,9 +43,21 @@ class Annotation {
 
     /**
      * @type: string
+     * @description: @TableName in class
+     */
+    private $_tableName;
+
+    /**
+     * @type: string
      * @description: regex used to read the code blocks
      */
     private $_regex = "/@(.*):(.*)|@(.*)/mi";
+
+    /**
+     * @var array
+     * @description: Annotation class
+     */
+    private $_ClassAnnotations = array();
 
     /**
      * @type: array
@@ -54,6 +67,8 @@ class Annotation {
         "Required" => array(),
         "NotMapped" => array("getFunction" => false),
         "Range" => array(),
+        "CNPJ" => array(),
+        "CPF" => array(),
         "Length" => array(),
         "Email" => array(),
         "Date" =>  array(),
@@ -65,7 +80,8 @@ class Annotation {
         "Type" => array("getFunction" => false),
         "Virtual" => array("getFunction" => false),
         "Fk" => array("getFunction" => false),
-        "Name" => array("getFunction" => false)
+        "Name" => array("getFunction" => false),
+        "TableName" => array("getFunction" => false)
     );
 
     /**
@@ -81,7 +97,7 @@ class Annotation {
         $cacheGet = $cache->get($this->_class);
         $cacheMethods = $cache->get("methods" . $this->_class);
 
-        if($cacheGet == null && $cacheMethods == null) {
+        if($cacheGet == null && $cacheMethods == null || ((defined("DEBUG") && DEBUG === true))) {
             $this->getAllAnnotations();
             $cache->set($this->_class, $this->_annotations, "24 hours");
             $cache->set("methods" . $this->_class, $this->_annotationsMethods, "24 hours");
@@ -89,6 +105,8 @@ class Annotation {
             $this->_annotations = $cacheGet;
             $this->_annotationsMethods = $cacheMethods;
         }
+
+        $this->getAnnotationClass($class);
     }
 
     /**
@@ -96,7 +114,6 @@ class Annotation {
      */
     private function getAllAnnotations(){
         $properties = $this->_reflection->getProperties();
-
         $methods = $this->_reflection->getMethods();
 
         foreach ($properties as $l) {
@@ -137,13 +154,11 @@ class Annotation {
         $method = new \ReflectionMethod($this->_class, $attr);
 
         preg_match_all($this->_regex, $method->getDocComment(),$out, PREG_SET_ORDER);
-        #var_dump($this->_attributes);
 
         $this->_annotationsMethods[$attr] = array();
 
         if(is_array($out)) :
             $count = count($out);
-
             for ($i = 0; $i < $count; ++$i):
                 $this->setAnnotationMethod($out[$i], $attr);
             endfor;
@@ -162,6 +177,21 @@ class Annotation {
 
         if(array_key_exists($annotation, $this->_attributes))
             $this->_annotations[$attr][$annotation] = trim($array[2] == '' ? 'true' : str_replace(";", "", $array[2]));
+    }
+
+
+    /**
+     * @param array $array
+     * @param $attr
+     */
+    private function setClassAnnotation(array $array){
+        if($array[1] == '')
+            $annotation = ucfirst(trim(preg_replace('/\s\s+/', '', $array[3])));
+        else
+            $annotation = ucfirst(trim(preg_replace('/\s\s+/', '', $array[1])));
+
+        if(array_key_exists($annotation, $this->_attributes))
+            $this->_ClassAnnotations[$annotation] = trim($array[2] == '' ? 'true' : str_replace(";", "", $array[2]));
     }
 
     /**
@@ -245,6 +275,29 @@ class Annotation {
             return $this->_annotations[$campo]["DisplayName"];
 
         return $campo;
+    }
+
+    /**
+     * @return void
+     */
+    private function getAnnotationClass($model){
+        $this->_tableName = $this->getClass($model);
+
+        preg_match_all($this->_regex, $this->_reflection->getDocComment(),$out, PREG_SET_ORDER);
+
+        if(is_array($out)) :
+            $count = count($out);
+            for ($i = 0; $i < $count; ++$i):
+                $this->setClassAnnotation($out[$i]);
+            endfor;
+        endif;
+    }
+
+    public function getTableName(){
+        if(isset($this->_ClassAnnotations["TableName"]))
+            return $this->_ClassAnnotations["TableName"];
+
+        return str_replace(NAMESPACE_ENTITIES , "", $this->_class);
     }
 
 }
